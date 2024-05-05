@@ -1,0 +1,6 @@
+= Easy password
+
+== Description
+
+Easy password or ezpswd is simple C based programm stored passwords in encrypted state in SQLite3 Data Base.
+It's another try to realize my idea with pass storage.
