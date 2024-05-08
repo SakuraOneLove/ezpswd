@@ -32,13 +32,12 @@
 
 #define SIZE 100
 
-unsigned char *getepass()
+char *getepass(char *pstr, int psize)
 {
 	int i = 0;
 	int ch;
+	char *res;
 	struct termios oldt, newt;
-	unsigned char *ptr;
-	unsigned char buffer[SIZE + 1];
 
 	/* Сохраняем старые настройки терминала */
 	tcgetattr(fileno(stdin), &oldt);
@@ -48,77 +47,12 @@ unsigned char *getepass()
 	/* Устанавливаем новые настройки терминала */
 	tcsetattr(fileno(stdin), 0, &newt);
 
-	/*
-	 * Вводим первый символ без цикла, потому что
-	 * может быть возврат строки ('\n') первым символом
-	 * и тогда функция сразу завершится.
-	 */
-	/*ch = getchar();*/
-	/*putchar(ch);*/
-	/*
-	 * Если первый символ '\n', то пропускаем его,
-	 * а иначе добавляем в буффер и увеличиваем счетчик.
-	 */
-	/*if (ch != '\n') {*/
-		/*buffer[i] = ch;*/
-		/*i++;*/
-	/*}*/
+	/* Считываем строку и записываем результат */
+	res = fgets(pstr, psize, stdin);
 
-	/* Вывод терминала скрыт */
-	while (i < 5) {
-		ch = getchar();
-		i++;
-	/*while (((ch = getchar()) != '\n') && (i < SIZE) && (ch != EOF)) {*/
-		/*if (ch != '\b') {*/
-			/*buffer[i] = ch;*/
-			/*i++;*/
-		/*} else if (i != 0) {*/
-			/*i--;*/
-		/*}*/
-	}
-
-	/* Выделяем память под строку */
-	/*ptr = calloc(i, sizeof(char));*/
-
-	/* Устанавливаем значения в переменную, под которую выделена память */
-	for (int n; n < i; n++) {
-		putchar(buffer[n]);
-		/*ptr[n] = buffer[n];*/
-	}
 	/* Возвращаем обратно исходные настройки */
 	tcsetattr(fileno(stdin), 0, &oldt);
 
-	return NULL;
+	return res;
 }
-/*
- * Ограничение размера пароля в 100 символов.
- * Вообще 100 символов даже очень много для пароля,
- * но пусть будет так.
- */
 
-char *gethpass()
-{
-	char buffer[SIZE + 1];
-	char symb;
-	int count;
-
-	/*
-	 * Вводим пароль до тех пор пока не будет нажата клавиша 'Enter'
-	 * или не будет достигнут лимит по размеру пароля.
-	 */
-
-	while (((symb = getchar())) != '\n' && (count < 100)) {
-		buffer[count] = symb;
-		/*putchar('\b');*/
-		printf("%s", "\b \b");
-		count++;
-	}
-
-	buffer[count] = '\0'; /* Добавляем последним символом конец строки */
-
-	for (int i = 0; i < count; i++) {
-		putchar(buffer[i]);
-	}
-
-	return 0;
-}

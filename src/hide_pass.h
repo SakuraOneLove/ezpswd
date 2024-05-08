@@ -26,7 +26,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* Модуль ввода пароля в зашифрованном виде (со звездочками) */
+/* Hide terminal echo with TERMIOS lib */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,7 +35,6 @@
 #ifndef HIDE_PASS_H
 #define HIDE_PASS_H
 
-char *gethpass();
-unsigned char *getepass();
+char *getepass(char *, int);
 
 #endif

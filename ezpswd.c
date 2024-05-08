@@ -29,63 +29,99 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "src/hide_pass.h"
+#include "src/multilang.h"
+
+#define LOGIN_SIZE 30
+#define PASS_SIZE 50
 
 int main(int argc, char *argv[])
 {
 	/* Text constants here */
-	const char dialog_choose[] =\
-"1. Просмотр сохраненных записей\n\
-2. Добавление новой записи\n\
-3. Изменение записи\n\
-4. Удаление записи";
 
 	/* Переменные выбора сценария взаимодействия с пользователем */
-	int dialog_answ;
+	int init_answer;
+	int start_answer;
 	char *login;
-	/*
-	 * Не забыть освободить память память по указателю 'password',
-	 * т.к. она выделена при помощи 'calloc()'.
-	 * Освободить при помощи 'free()'.
-	 */
-	unsigned char *password;
+	char *password;
 
-	/* Авторизация */
-	/* Ввод логина */
-	/*printf("Input login:\n");*/
-	/*scanf("%m[^\n]", &login);*/
-	/* Ввод пароля */
-	/*printf("Input password:\n");*/
-	puts("Input password:");
-	password = getepass();
+	/* Allocate memory for login and password */
+	login = malloc(LOGIN_SIZE * sizeof(char));
+	password = malloc(PASS_SIZE * sizeof(char));
 
-	/*printf("Password: %s\n", password);*/
-	/*printf("\nLogin: %s\nPassword: %s\n", login, password);*/
-	/*free(password);*/
-	/*printf("%s\n", password);*/
+	/* Print initial programm message */
+	fputs(init_message, stdout);
+	fputs(init_dialog, stdout);
+	/* Read answer */
+	scanf("%d", &init_answer);
 
-	/* Печать диалогового меню  выбора дальнейшего действия */
-	puts(dialog_choose);
-	/* Выбор режима программы */
-	/*scanf("%d", &dialog_answ);*/
-	
+	if (init_answer == 1) {
 
-	switch (dialog_answ)
-	{ 
-		case 1:
-			puts("Choose 1");
-			break;
-		case 2:
-			puts("Choose 2");
-			break;
-		case 3:
-			puts("Choose 3");
-			break;
-		case 4:
-			puts("Choose 4");
-			break;
-		default:
-			break;
-	}	
+		/* Print initial dialogue */
+		fputs(start_dialog, stdout);
+
+		/* Allocate memory for random size string using scanf */
+		/*scanf("%m[^\n]", &login);*/
+
+		printf("Login: %s", login);
+		printf("Password: %s", password);
+
+		switch (start_answer)
+		{ 
+			/* List passwords */
+			case 1:
+				puts("Choose 1");
+				break;
+			/* Add new password */
+			case 2:
+				puts("Choose 2");
+				break;
+			/* Edit password */
+			case 3:
+				puts("Choose 3");
+				break;
+			/* Remove password */
+			case 4:
+				puts("Choose 4");
+				break;
+			/* Add new user */
+			case 5:
+				/* Print message */
+				fputs(create_message, stdout);
+				/* Get data */
+				fputs(create_login, stdout);
+				fgets(login, LOGIN_SIZE, stdin);
+
+				fputs(create_password, stdout);
+				fgets(password, PASS_SIZE, stdin);
+
+				printf("User login: %s", login);
+				printf("User password: %s", password);
+				break;
+			/* Edit user */
+			case 6:
+				break;
+			default:
+				break;
+		}	
+	} else if (init_answer == 2) {
+
+		/* Authorization */
+		fputs(input_login, stdout);
+		scanf("%s", login);
+		/*fgets(login, LOGIN_SIZE, stdin);*/
+
+		fputs(input_password, stdout);
+		getepass(password, PASS_SIZE);
+
+		/* Add blank line */
+		puts("");
+
+	} else {
+		fputs(init_error, stdout);
+	}
+	/* Clean memory here */
+	free(login);
+	free(password);
 
 	return 0;
 }
