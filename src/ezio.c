@@ -26,15 +26,44 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* Hide terminal echo with TERMIOS lib */
+/* Модуль ввода пароля в зашифрованном виде (со звездочками) */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <termios.h>
+#include "ezio.h"
 
-#ifndef HIDE_PASS_H
-#define HIDE_PASS_H
+#define SIZE 100
 
-char *getepass(char *, int);
+char *getepass(char *pstr, int psize)
+{
+	int i = 0;
+	int ch;
+	size_t s_size;
+	char *res;
+	struct termios oldt, newt;
 
-#endif
+	/* Сохраняем старые настройки терминала */
+	tcgetattr(fileno(stdin), &oldt);
+	newt = oldt;
+	newt.c_lflag &= ~ECHO;
+
+	/* Устанавливаем новые настройки терминала */
+	tcsetattr(fileno(stdin), 0, &newt);
+
+	/* Считываем строку и записываем результат */
+	res = fgets(pstr, psize, stdin);
+
+	/* Get string size and remove \n */
+	s_size = strlen(res);
+	res[s_size - 1] = '\0';
+
+	/* Возвращаем обратно исходные настройки */
+	tcsetattr(fileno(stdin), 0, &oldt);
+
+	return res;
+}
+
+void clear_input(void)
+{
+	int c;
+	
+	for (; (c = getchar()) != '\n' && c != EOF;) { }
+}
