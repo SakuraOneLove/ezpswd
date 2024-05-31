@@ -27,14 +27,13 @@
  */
 
 /* Hide terminal echo with TERMIOS lib */
+#ifndef HIDE_PASS_H
+#define HIDE_PASS_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>
-
-#ifndef HIDE_PASS_H
-#define HIDE_PASS_H
 
 char *getepass(char *, int);
 void clear_input(void);
