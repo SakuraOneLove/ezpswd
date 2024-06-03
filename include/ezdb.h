@@ -31,6 +31,10 @@
 #ifndef EZDB_H
 #define EZDB_H
 
-#include <sqlite3.h>
+#include <stdio.h>
+#include "sqlite3.h"
+
+/* Create table for store users */
+int create_users_table(const char*, char*);
 
 #endif

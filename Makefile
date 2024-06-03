@@ -8,8 +8,8 @@ OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 CPPFLAGS := -Iinclude -MMD -MP
 CFLAGS := -Wall
-LDFLAGS := -Llibj
-LDLIBS := -lm
+LDFLAGS := -Llib
+LDLIBS := -lsqlite3
 
 .PHONY: all clean
 

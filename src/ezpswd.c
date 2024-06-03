@@ -34,6 +34,8 @@
 #define LOGIN_SIZE 30
 #define PASS_SIZE 50
 
+const *sql_test = "create table test1 (id integer primary key autoincrement, login text, password text);";
+
 int main(int argc, char *argv[])
 {
 	/* Text constants here */
@@ -108,16 +110,19 @@ int main(int argc, char *argv[])
 		/* Authorization */
 		fputs(input_login, stdout);
 		scanf("%s", login);
-		/*fgets(login, LOGIN_SIZE, stdin);*/
 
 		/* Clear stdin */
 		clear_input();
 
-		fputs(input_password, stdout);
-		getepass(password, PASS_SIZE);
+		/* Create test table */
+		create_users_table("test.db", sql_test);
+		/*fputs(input_password, stdout);*/
+		/*getepass(password, PASS_SIZE);*/
 
 		/* Add blank line */
 		puts("");
+
+		printf("Login: %s\nPassword: %s\n", login, password);
 	} else {
 		fputs(init_error, stdout);
 	}

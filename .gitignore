@@ -3,3 +3,4 @@
 ezpswd
 bin
 obj
+*.db
