@@ -1,6 +1,7 @@
 SRC_DIR := src
 OBJ_DIR := obj
 BIN_DIR := bin
+DB_DIR := db
 
 EXE := $(BIN_DIR)/ezpswd
 SRC := $(wildcard $(SRC_DIR)/*.c)
@@ -11,7 +12,7 @@ CFLAGS := -Wall
 LDFLAGS := -Llib
 LDLIBS := -lsqlite3
 
-.PHONY: all clean
+.PHONY: all clean clean_db
 
 all: $(EXE)
 
@@ -27,5 +28,7 @@ $(BIN_DIR) $(OBJ_DIR):
 clean:
 	@$(RM) -rv $(BIN_DIR) $(OBJ_DIR)
 
+clean_db:
+	rm db/test.db
 -include $(OBJ:.o=.d)
 

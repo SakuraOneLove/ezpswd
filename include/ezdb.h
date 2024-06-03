@@ -34,7 +34,9 @@
 #include <stdio.h>
 #include "sqlite3.h"
 
+extern const char *sql_create_users; 
+
 /* Create table for store users */
-int create_users_table(const char*, char*);
+int create_users_table(const char*);
 
 #endif

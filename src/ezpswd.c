@@ -29,12 +29,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ezio.h"
+#include "ezdb.h"
 #include "multilang.h"
 
 #define LOGIN_SIZE 30
 #define PASS_SIZE 50
 
-const *sql_test = "create table test1 (id integer primary key autoincrement, login text, password text);";
+const char *db_name = "../db/test.db";
 
 int main(int argc, char *argv[])
 {
@@ -115,7 +116,7 @@ int main(int argc, char *argv[])
 		clear_input();
 
 		/* Create test table */
-		create_users_table("test.db", sql_test);
+		create_users_table(db_name);
 		/*fputs(input_password, stdout);*/
 		/*getepass(password, PASS_SIZE);*/
 

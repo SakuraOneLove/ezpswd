@@ -30,7 +30,10 @@
 
 #include "ezdb.h"
 
-int create_users_table(const char *fname, char *sql)
+const char *sql_create_users =\
+	"create table user (id integer primary key autoincrement, login text, password text);";
+
+int create_users_table(const char *fname)
 {
 	sqlite3 *db;
 	char *err_msg = 0;
@@ -40,7 +43,7 @@ int create_users_table(const char *fname, char *sql)
 	dbcon = sqlite3_open(fname, &db);
 
 	if (dbcon == SQLITE_OK) {
-		result = sqlite3_exec(db, sql, 0, 0, &err_msg);
+		result = sqlite3_exec(db, sql_create_users, 0, 0, &err_msg);
 		sqlite3_close(db);
 
 		if (result != SQLITE_OK)

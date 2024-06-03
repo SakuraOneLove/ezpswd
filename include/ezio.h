@@ -27,8 +27,8 @@
  */
 
 /* Hide terminal echo with TERMIOS lib */
-#ifndef HIDE_PASS_H
-#define HIDE_PASS_H
+#ifndef EZIO_H
+#define EZIO_H
 
 #include <stdio.h>
 #include <stdlib.h>
