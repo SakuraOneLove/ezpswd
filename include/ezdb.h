@@ -32,11 +32,19 @@
 #define EZDB_H
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "sqlite3.h"
 
-extern const char *sql_create_users; 
-
+/* Init statements and database */
+int init_db(const char*);
+/* Finitialize working with database */
+int finish_db();
 /* Create table for store users */
 int create_users_table(const char*);
-
+/* Add user to table */
+int create_user(const char*);
+/* Sql operations with user table */
+int insert_into_user(const char*, const char*);
+int test_func(const char*, const char*);
 #endif

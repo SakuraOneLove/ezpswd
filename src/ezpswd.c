@@ -35,7 +35,7 @@
 #define LOGIN_SIZE 30
 #define PASS_SIZE 50
 
-const char *db_name = "../db/test.db";
+const char *db_name = "test.db";
 
 int main(int argc, char *argv[])
 {
@@ -115,15 +115,20 @@ int main(int argc, char *argv[])
 		/* Clear stdin */
 		clear_input();
 
-		/* Create test table */
-		create_users_table(db_name);
-		/*fputs(input_password, stdout);*/
-		/*getepass(password, PASS_SIZE);*/
+		fputs(input_password, stdout);
+		getepass(password, PASS_SIZE);
 
 		/* Add blank line */
 		puts("");
 
 		printf("Login: %s\nPassword: %s\n", login, password);
+
+		puts("Executing operations with database.....");
+		init_db(db_name);
+		insert_into_user(login, password);
+		/*test_func(login, password);*/
+		/*finish_db();*/
+		/*test_func();*/
 	} else {
 		fputs(init_error, stdout);
 	}
