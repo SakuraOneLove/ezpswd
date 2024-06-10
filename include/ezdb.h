@@ -46,5 +46,6 @@ int create_users_table(const char*);
 int create_user(const char*);
 /* Sql operations with user table */
 int insert_into_user(const char*, const char*);
-int test_func(const char*, const char*);
+/* Functions for debugging */
+void print_db_name(void);
 #endif
