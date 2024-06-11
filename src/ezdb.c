@@ -39,12 +39,12 @@
 #include "ezdb.h"
 
 char *db_path;
+sqlite3 *db;
 
 int init_db(const char* path)
 {
 	int rc;
 	char *err_msg;
-	sqlite3 *db;
 	/* Initialize sql queries */
 	const char *create_table_user_query = \
 		"create table if not exists user (id integer primary key autoincrement, login text, password text);";
@@ -65,7 +65,6 @@ int init_db(const char* path)
 		sqlite3_free(err_msg);
 		return rc;
 	}
-	sqlite3_close(db);
 	return 0;
 }
 
@@ -73,6 +72,10 @@ int finish_db()
 {
 	/* Free memory */
 	free(db_path);
+	/* Close connection to database */
+	if (db != NULL) {
+		sqlite3_close(db);
+	}
 	return 0;
 }
 
@@ -84,35 +87,27 @@ int finish_db()
 /* For User table */
 int insert_into_user(const char *login, const char *password)
 {
-	sqlite3 *db;
 	sqlite3_stmt *pstmt;
 	int rc;
-
 	const char *add_user_query = "insert into user(login, password) values(?, ?);";
-
-	rc = sqlite3_open(db_path, &db);
-	if (rc != SQLITE_OK) {
-		printf("Can't connect to %s error code %d\n", db_path, rc);
-		return rc;
-	}
+	EVP_CIPHER_CTX* en = EVP_CIPHER_CTX_new();
+	EVP_CIPHER_CTX* de = EVP_CIPHER_CTX_new();
 	/* Create statement */
 	rc = sqlite3_prepare_v2(db, add_user_query, -1, &pstmt, NULL); 
 	if (rc != SQLITE_OK) {
 		printf("Can't prepare statement 'insert into user', error code: %d\n", rc);
-		sqlite3_close(db);
 		return rc;
 	}
 	/* Bind parameters to sql query */
 	sqlite3_bind_text(pstmt, 1, login, -1, NULL);
 	sqlite3_bind_text(pstmt, 2, password, -1, NULL);
-	/* Prepare statemnt */
+	/* Prepare statement */
 	rc = sqlite3_step(pstmt);
 	if (rc == SQLITE_ERROR) {
 		printf("Can't execute sql statement 'insert into user', error code: %d\n", rc);
 		return rc;
 	}
 	sqlite3_finalize(pstmt);
-	sqlite3_close(db);
 	return 0;
 }
 

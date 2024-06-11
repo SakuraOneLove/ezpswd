@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 		/* Testing for saved db path */
 		/*print_db_name();*/
 		insert_into_user(login, password);
-		/*finish_db();*/
+		finish_db();
 		/*test_func();*/
 	} else {
 		fputs(init_error, stdout);

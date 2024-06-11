@@ -10,7 +10,7 @@ OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 CPPFLAGS := -Iinclude -MMD -MP
 CFLAGS := -Wall
 LDFLAGS := -Llib
-LDLIBS := -lsqlite3
+LDLIBS := -lsqlite3 -lcrypto
 
 .PHONY: all clean clean_db
 

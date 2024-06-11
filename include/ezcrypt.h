@@ -28,25 +28,17 @@
 
 /* Create tables, store users and data */
 
-#ifndef EZDB_H
-#define EZDB_H
+#ifndef EZCRYPT_H
+#define EZCRYPT_H
 
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include "sqlite3.h"
-#include "ezcrypt.h"
+#include <openssl/evp.h>
+#include <openssl/aes.h>
 
-/* Init statements and database */
-int init_db(const char*);
-/* Finitialize working with database */
-int finish_db();
-/* Create table for store users */
-int create_users_table(const char*);
-/* Add user to table */
-int create_user(const char*);
-/* Sql operations with user table */
-int insert_into_user(const char*, const char*);
-/* Functions for debugging */
-void print_db_name(void);
+int aes_init(unsigned char*, int, unsigned char*, EVP_CIPHER_CTX*, EVP_CIPHER_CTX*);
+unsigned char *aes_encrypt(EVP_CIPHER_CTX *e, unsigned char *plaintext, int *len);
+unsigned char *aes_decrypt(EVP_CIPHER_CTX *e, unsigned char *ciphertext, int *len);
+
 #endif
