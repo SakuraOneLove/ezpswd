@@ -73,14 +73,22 @@ int main(int argc, char *argv[])
 		/* Add blank line */
 		puts("");
 
-		init_db(db_name);
-		/* Check user */
-		if (auth_user(login, password) == 0) {
-			puts("User existing and password right!");
-		} else {
-			puts("User not existing or bad password");
-		}
-		finish_db();
+		/*init_db(db_name);*/
+		/*[> Check user <]*/
+		/*if (auth_user(login, password) == 0) {*/
+			/*puts("User existing and password right!");*/
+		/*} else {*/
+			/*puts("User not existing or bad password");*/
+		/*}*/
+		/*finish_db();*/
+		unsigned char *digest_buffer = malloc(sizeof(char) * 65);
+		unsigned int digest_len;
+		sha256_digest(password, strlen(password), digest_buffer, &digest_len);
+		puts("SHA256 checksum:");
+		for(int i = 0; i < digest_len; i++) printf("%02x", digest_buffer[i]);
+		printf("\nSHA256 checksum SIZE: %d\n", digest_len);
+		printf("EVP_MAX_MD_SIZE: %d\n", EVP_MAX_MD_SIZE);
+		free(digest_buffer);
 		/* Print initial dialogue */
 		/*fputs(start_dialog, stdout);*/
 

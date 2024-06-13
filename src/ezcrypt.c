@@ -100,22 +100,46 @@ unsigned char *aes_decrypt(EVP_CIPHER_CTX *e, unsigned char *ciphertext, int *le
   return plaintext;
 }
 
-/* Calculate sha256 checksum */
-void sha256_string(const char *string, char outputBuffer[65])
+/*
+ * Error codes:
+ * 1 - can't execute EVP_MD_CTX_NEW
+ * 2 - can't execute EVP_DigestInit_ex
+ * 3 - can't execute EVP_DigestUpdate
+ * 4 - can't execute EVP_DigestFinal_ex
+ * Good code:
+ * 0 - OK
+ */
+int sha256_digest(const unsigned char *msg, size_t msg_len,
+					unsigned char *digest_msg, unsigned int *digest_len)
 {
-    unsigned char hash[SHA256_DIGEST_LENGTH];
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-    SHA256_Update(&sha256, string, strlen(string));
-    SHA256_Final(hash, &sha256);
-    int i = 0;
-    for(i = 0; i < SHA256_DIGEST_LENGTH; i++)
-    {
-        sprintf(outputBuffer + (i * 2), "%02x", hash[i]);
-    }
-    outputBuffer[64] = 0;
-}
+	int rc = 0;
+	EVP_MD_CTX *mdctx;
+	const EVP_MD *md = EVP_sha256();
 
+	if ((mdctx = EVP_MD_CTX_new()) == NULL) {
+		puts("Can't execute EVP_MD_CTX_NEW");
+		rc = 1;
+		goto err_label;
+	}
+	if(1 != EVP_DigestInit_ex(mdctx, md, NULL)) {
+		puts("Can't execute EVP_DigestInit_ex");
+		rc = 2;
+		goto err_free_mem_label;
+	}
+	if(1 != EVP_DigestUpdate(mdctx, msg, msg_len)) {
+		puts("Can't execute EVP_DigestUpdate");
+		rc = 3;
+		goto err_free_mem_label;
+	}
+	if(1 != EVP_DigestFinal_ex(mdctx, digest_msg, digest_len)) {
+		puts("Can't execute EVP_DigestFinal_ex");
+		rc = 4;
+	}
+err_free_mem_label:
+	EVP_MD_CTX_free(mdctx);
+err_label:
+	return rc;
+}
 /*int main(int argc, char **argv)*/
 /*{*/
 	/* "opaque" encryption, decryption ctx structures that libcrypto uses to record
