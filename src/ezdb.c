@@ -104,12 +104,12 @@ int finish_db()
 int auth_user(const char *login, const char *password)
 {
 	sqlite3_stmt *fstmt;
-	int rc, digest_size, buffer_size = 65;
+	int rc, buffer_size = 65;
 	char *returned_password;
 	char *sha_password_buffer = (char*)malloc(sizeof(char) * buffer_size);
 	const char *find_user_by_login = "select password from user where login=?;"; 
 	/* Calculate checksum */
-	sha256_digest((const unsigned char*)password, strlen(password), sha_password_buffer, &digest_size);
+	sha256_digest((const unsigned char*)password, strlen(password), sha_password_buffer);
 	/* Create statement */
 	rc = sqlite3_prepare_v2(db, find_user_by_login, -1, &fstmt, NULL); 
 	if (rc != SQLITE_OK) {
@@ -150,11 +150,11 @@ int auth_user(const char *login, const char *password)
 int insert_into_user(const char *login, const char *password)
 {
 	sqlite3_stmt *pstmt;
-	int rc, digest_size, buffer_size = 65;
+	int rc, buffer_size = 65;
 	char *sha_password_buffer = (char*)malloc(sizeof(char) * buffer_size);
 	const char *add_user_query = "insert into user(login, password) values(?, ?);";
 	/* Get sha256 checksum */
-	sha256_digest((const unsigned char*)password, strlen(password), sha_password_buffer, &digest_size);
+	sha256_digest((const unsigned char*)password, strlen(password), sha_password_buffer);
 	/* Create statement */
 	rc = sqlite3_prepare_v2(db, add_user_query, -1, &pstmt, NULL); 
 	if (rc != SQLITE_OK) {

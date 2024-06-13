@@ -34,8 +34,6 @@
 
 char *getepass(char *pstr, int psize)
 {
-	int i = 0;
-	int ch;
 	size_t s_size;
 	char *res;
 	struct termios oldt, newt;

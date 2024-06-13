@@ -109,12 +109,12 @@ unsigned char *aes_decrypt(EVP_CIPHER_CTX *e, unsigned char *ciphertext, int *le
  * Good code:
  * 0 - OK
  */
-int sha256_digest(const unsigned char *msg, size_t msg_len,
-					unsigned char *digest_msg, unsigned int *digest_len)
+int sha256_digest(const unsigned char *msg, size_t msg_len,	char *digest_msg)
 {
 	int rc = 0;
 	EVP_MD_CTX *mdctx;
 	const EVP_MD *md = EVP_sha256();
+	unsigned char* temp_buffer = (unsigned char*)malloc(sizeof(char) * 65);
 
 	if ((mdctx = EVP_MD_CTX_new()) == NULL) {
 		puts("Can't execute EVP_MD_CTX_NEW");
@@ -131,13 +131,16 @@ int sha256_digest(const unsigned char *msg, size_t msg_len,
 		rc = 3;
 		goto err_free_mem_label;
 	}
-	if(1 != EVP_DigestFinal_ex(mdctx, digest_msg, digest_len)) {
+	if(1 != EVP_DigestFinal_ex(mdctx, temp_buffer, 0)) {
 		puts("Can't execute EVP_DigestFinal_ex");
 		rc = 4;
 	}
+	/* Copy casted value to char* destination */
+	strcpy(digest_msg, (const char*)temp_buffer);	
 err_free_mem_label:
 	EVP_MD_CTX_free(mdctx);
 err_label:
+	free(temp_buffer);
 	return rc;
 }
 /*int main(int argc, char **argv)*/

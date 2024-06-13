@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
 	/* Переменные выбора сценария взаимодействия с пользователем */
 	int init_answer;
-	int start_answer;
+	/*int start_answer;*/
 	char *login;
 	char *password;
 
@@ -81,13 +81,9 @@ int main(int argc, char *argv[])
 			/*puts("User not existing or bad password");*/
 		/*}*/
 		/*finish_db();*/
-		unsigned char *digest_buffer = malloc(sizeof(char) * 65);
-		unsigned int digest_len;
-		sha256_digest(password, strlen(password), digest_buffer, &digest_len);
-		puts("SHA256 checksum:");
-		for(int i = 0; i < digest_len; i++) printf("%02x", digest_buffer[i]);
-		printf("\nSHA256 checksum SIZE: %d\n", digest_len);
-		printf("EVP_MAX_MD_SIZE: %d\n", EVP_MAX_MD_SIZE);
+		char *digest_buffer = malloc(sizeof(char) * 65);
+		sha256_digest((const unsigned char*)password, strlen(password), digest_buffer);
+		printf("SHA256 checksum: %s\n", digest_buffer);
 		free(digest_buffer);
 		/* Print initial dialogue */
 		/*fputs(start_dialog, stdout);*/

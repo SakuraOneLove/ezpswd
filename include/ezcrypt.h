@@ -41,6 +41,6 @@
 int aes_init(unsigned char*, int, unsigned char*, EVP_CIPHER_CTX*, EVP_CIPHER_CTX*);
 unsigned char *aes_encrypt(EVP_CIPHER_CTX*, unsigned char*, int*);
 unsigned char *aes_decrypt(EVP_CIPHER_CTX*, unsigned char*, int*);
-int sha256_digest(const unsigned char*, size_t, unsigned char*, unsigned int*);
+int sha256_digest(const unsigned char*, size_t, char*);
 
 #endif
