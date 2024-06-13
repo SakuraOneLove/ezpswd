@@ -39,6 +39,7 @@
 
 /* Init statements and database */
 int init_db(const char*);
+int auth_user(const char*, const char*);
 /* Finitialize working with database */
 int finish_db();
 /* Create table for store users */
@@ -47,6 +48,8 @@ int create_users_table(const char*);
 int create_user(const char*);
 /* Sql operations with user table */
 int insert_into_user(const char*, const char*);
+/* Sql operations with storage table */
+int insert_into_storage(const char*, const char*, const char*);
 /* Functions for debugging */
 void print_db_name(void);
 #endif

@@ -38,8 +38,19 @@
 
 #include "ezdb.h"
 
+#define KEY_SIZE 50
+
 char *db_path;
 sqlite3 *db;
+char *key_data;
+static int key_data_len;
+/*
+ * Auth user status:
+ * 0 - authorized user
+ * 1 - default value (no check user auth)
+ * 2 - user is not authorized
+ */
+static int user_status; 
 
 int init_db(const char* path)
 {
@@ -49,7 +60,7 @@ int init_db(const char* path)
 	const char *create_table_user_query = \
 		"create table if not exists user (id integer primary key autoincrement, login text, password text);";
 	/* Allocate memory for path name */
-	db_path = malloc(strlen(path) * sizeof(char) + 1);
+	db_path = malloc((strlen(path) + 1) * sizeof(char));
 	/* Copy path to db_path */
 	strcpy(db_path, path);
 	/* Open connection */
@@ -65,6 +76,10 @@ int init_db(const char* path)
 		sqlite3_free(err_msg);
 		return rc;
 	}
+	/* Init symmetrical key for encryption */
+	key_data = (char*)malloc(sizeof(char) * KEY_SIZE);
+	/* Init other variables */
+	user_status = 1;
 	return 0;
 }
 
@@ -72,6 +87,7 @@ int finish_db()
 {
 	/* Free memory */
 	free(db_path);
+	free(key_data);
 	/* Close connection to database */
 	if (db != NULL) {
 		sqlite3_close(db);
@@ -79,6 +95,52 @@ int finish_db()
 	return 0;
 }
 
+/* 
+ * Returned status codes for 'auth_user':
+ * 0 - "ok" user authorized
+ * negative num - not authorized
+ * positive num - not authorized
+ */
+int auth_user(const char *login, const char *password)
+{
+	sqlite3_stmt *fstmt;
+	int rc, buffer_size = 65;
+	char *returned_password;
+	char *sha_password_buffer = (char*)malloc(sizeof(char) * buffer_size);
+	const char *find_user_by_login = "select password from user where login=?;"; 
+	/* Calculate checksum */
+	sha256_string(password, sha_password_buffer);
+	/* Create statement */
+	rc = sqlite3_prepare_v2(db, find_user_by_login, -1, &fstmt, NULL); 
+	if (rc != SQLITE_OK) {
+		printf("Can't prepare statement '%s', error code: %d\n", find_user_by_login, rc);
+		return rc;
+	}
+	/* Bind parameters to sql query */
+	sqlite3_bind_text(fstmt, 1, login, -1, NULL);
+	/* Get password by login */
+	if(sqlite3_step(fstmt) == SQLITE_ROW){
+		returned_password	= sqlite3_column_text(fstmt, 0);
+		rc = strcmp(sha_password_buffer, returned_password);
+		/* Set user auth status code */
+		if (rc == 0) {
+			user_status = 0;
+			strcpy(key_data, password);
+			key_data_len = (int)strlen(key_data);
+		}
+		else {
+			user_status = 2;
+		}
+	} 
+		else {
+		user_status = 2;
+		rc = 1;
+	}
+	/* Free memory */
+	free(sha_password_buffer);
+	sqlite3_finalize(fstmt);
+	return rc;
+}
 /* 
  * Realize some SQL operations,
  * such as Insert, Drop, Update and etc.
@@ -88,10 +150,11 @@ int finish_db()
 int insert_into_user(const char *login, const char *password)
 {
 	sqlite3_stmt *pstmt;
-	int rc;
+	int rc, buffer_size = 65;
+	char *sha_password_buffer = (char*)malloc(sizeof(char) * buffer_size);
 	const char *add_user_query = "insert into user(login, password) values(?, ?);";
-	EVP_CIPHER_CTX* en = EVP_CIPHER_CTX_new();
-	EVP_CIPHER_CTX* de = EVP_CIPHER_CTX_new();
+	/* Get sha256 checksum */
+	sha256_string(password, sha_password_buffer);
 	/* Create statement */
 	rc = sqlite3_prepare_v2(db, add_user_query, -1, &pstmt, NULL); 
 	if (rc != SQLITE_OK) {
@@ -100,14 +163,53 @@ int insert_into_user(const char *login, const char *password)
 	}
 	/* Bind parameters to sql query */
 	sqlite3_bind_text(pstmt, 1, login, -1, NULL);
-	sqlite3_bind_text(pstmt, 2, password, -1, NULL);
+	sqlite3_bind_text(pstmt, 2, sha_password_buffer, -1, NULL);
 	/* Prepare statement */
 	rc = sqlite3_step(pstmt);
 	if (rc == SQLITE_ERROR) {
 		printf("Can't execute sql statement 'insert into user', error code: %d\n", rc);
 		return rc;
 	}
+
+	/* Free memory */
+	free(sha_password_buffer);
 	sqlite3_finalize(pstmt);
+	return 0;
+}
+
+int insert_into_storage(const char *name, const char *login, const char *password)
+{
+	/* "opaque" encryption, decryption ctx structures that libcrypto uses to record
+		 status of enc/dec operations */
+	EVP_CIPHER_CTX* en = EVP_CIPHER_CTX_new();
+	EVP_CIPHER_CTX* de = EVP_CIPHER_CTX_new();
+	/* 8 bytes to salt the key_data during key generation. This is an example of
+		 compiled in salt. We just read the bit pattern created by these two 4 byte 
+		 integers on the stack as 64 bits of contigous salt material - 
+		 ofcourse this only works if sizeof(int) >= 4 */
+	unsigned int salt[] = {64353, 95375};
+	/* gen key and iv. init the cipher ctx object */
+	if (aes_init(key_data, key_data_len, (unsigned char *)&salt, en, de)) {
+		printf("Couldn't initialize AES cipher\n");
+		return -1;
+	}
+	/* encrypt password */
+	unsigned char *ciphertext;
+	unsigned char *plaintext;
+	unsigned char *db_password;
+	int len;
+	/* The enc/dec functions deal with binary data and not C strings. strlen() will 
+		 return length of the string without counting the '\0' string marker. We always
+		 pass in the marker byte to the encrypt/decrypt functions so that after decryption 
+		 we end up with a legal C string */
+	len = strlen(password) + 1;
+	ciphertext = aes_encrypt(en, (unsigned char *)password, &len);
+
+	/* Insert code here ..... */
+
+	free(ciphertext);
+	EVP_CIPHER_CTX_free(en);
+	EVP_CIPHER_CTX_free(de);
 	return 0;
 }
 

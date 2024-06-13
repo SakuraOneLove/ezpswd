@@ -36,9 +36,11 @@
 #include <stdlib.h>
 #include <openssl/evp.h>
 #include <openssl/aes.h>
+#include <openssl/sha.h>
 
 int aes_init(unsigned char*, int, unsigned char*, EVP_CIPHER_CTX*, EVP_CIPHER_CTX*);
-unsigned char *aes_encrypt(EVP_CIPHER_CTX *e, unsigned char *plaintext, int *len);
-unsigned char *aes_decrypt(EVP_CIPHER_CTX *e, unsigned char *ciphertext, int *len);
+unsigned char *aes_encrypt(EVP_CIPHER_CTX*, unsigned char*, int*);
+unsigned char *aes_decrypt(EVP_CIPHER_CTX*, unsigned char*, int*);
+void sha256_string(const char*,char[]);
 
 #endif

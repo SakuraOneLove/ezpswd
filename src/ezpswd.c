@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include "ezio.h"
 #include "ezdb.h"
+#include "ezcrypt.h"
 #include "multilang.h"
 
 #define LOGIN_SIZE 30
@@ -59,53 +60,72 @@ int main(int argc, char *argv[])
 
 	if (init_answer == 1) {
 
+		/* Authorization */
+		fputs(input_login, stdout);
+		scanf("%s", login);
+
+		/* Clear stdin */
+		clear_input();
+
+		fputs(input_password, stdout);
+		getepass(password, PASS_SIZE);
+
+		/* Add blank line */
+		puts("");
+
+		init_db(db_name);
+		/* Check user */
+		if (auth_user(login, password) == 0) {
+			puts("User existing and password right!");
+		} else {
+			puts("User not existing or bad password");
+		}
+		finish_db();
 		/* Print initial dialogue */
-		fputs(start_dialog, stdout);
+		/*fputs(start_dialog, stdout);*/
 
 		/* Allocate memory for random size string using scanf */
 		/*scanf("%m[^\n]", &login);*/
 
-		printf("Login: %s", login);
-		printf("Password: %s", password);
 
-		switch (start_answer)
-		{
-			/* List passwords */
-			case 1:
-				puts("Choose 1");
-				break;
-			/* Add new password */
-			case 2:
-				puts("Choose 2");
-				break;
-			/* Edit password */
-			case 3:
-				puts("Choose 3");
-				break;
-			/* Remove password */
-			case 4:
-				puts("Choose 4");
-				break;
-			/* Add new user */
-			case 5:
-				/* Print message */
-				fputs(create_message, stdout);
-				/* Get data */
-				fputs(create_login, stdout);
-				fgets(login, LOGIN_SIZE, stdin);
+		/*switch (start_answer)*/
+		/*{*/
+			/*[> List passwords <]*/
+			/*case 1:*/
+				/*puts("Choose 1");*/
+				/*break;*/
+			/*[> Add new password <]*/
+			/*case 2:*/
+				/*puts("Choose 2");*/
+				/*break;*/
+			/*[> Edit password <]*/
+			/*case 3:*/
+				/*puts("Choose 3");*/
+				/*break;*/
+			/*[> Remove password <]*/
+			/*case 4:*/
+				/*puts("Choose 4");*/
+				/*break;*/
+			/*[> Add new user <]*/
+			/*case 5:*/
+				/*[> Print message <]*/
+				/*fputs(create_message, stdout);*/
+				/*[> Get data <]*/
+				/*fputs(create_login, stdout);*/
+				/*fgets(login, LOGIN_SIZE, stdin);*/
 
-				fputs(create_password, stdout);
-				fgets(password, PASS_SIZE, stdin);
+				/*fputs(create_password, stdout);*/
+				/*fgets(password, PASS_SIZE, stdin);*/
 
-				printf("User login: %s", login);
-				printf("User password: %s", password);
-				break;
-			/* Edit user */
-			case 6:
-				break;
-			default:
-				break;
-		}
+				/*printf("User login: %s", login);*/
+				/*printf("User password: %s", password);*/
+				/*break;*/
+			/*[> Edit user <]*/
+			/*case 6:*/
+				/*break;*/
+			/*default:*/
+				/*break;*/
+		/*}*/
 	} else if (init_answer == 2) {
 
 		/* Authorization */
