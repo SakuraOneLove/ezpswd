@@ -40,10 +40,9 @@ const char *db_name = "test.db";
 
 int main(int argc, char *argv[])
 {
-	/* Text constants here */
-
 	/* Переменные выбора сценария взаимодействия с пользователем */
 	int init_answer;
+	int menu_answer;
 	/*int start_answer;*/
 	char *login;
 	char *password;
@@ -52,6 +51,10 @@ int main(int argc, char *argv[])
 	login = malloc(LOGIN_SIZE * sizeof(char));
 	password = malloc(PASS_SIZE * sizeof(char));
 
+	/* Initialize Sqlite3 data */
+	init_db(db_name);
+	init_stmt();
+
 	/* Print initial programm message */
 	fputs(init_message, stdout);
 	fputs(init_dialog, stdout);
@@ -59,74 +62,57 @@ int main(int argc, char *argv[])
 	scanf("%d", &init_answer);
 
 	if (init_answer == 1) {
-
+		fputs(auth_message, stdout);
 		/* Authorization */
 		fputs(input_login, stdout);
 		scanf("%s", login);
-
 		/* Clear stdin */
 		clear_input();
-
+		/* Input password */
 		fputs(input_password, stdout);
 		getepass(password, PASS_SIZE);
-
 		/* Add blank line */
 		puts("");
-
-		init_db(db_name);
 		/*[> Check user <]*/
 		if (auth_user(login, password) == 0) {
 			/* Print initial dialogue */
 			fputs(start_dialog, stdout);
-			/* Allocate memory for random size string using scanf */
-			scanf("%m[^\n]", &login);
+			fputs(open_menu_message, stdout);
+			scanf("%d", &menu_answer);
+			switch (menu_answer) {
+				/* List passwords */
+				case 1:
+					puts("Choose 1");
+					break;
+				/* Add new password */
+				case 2:
+					puts("Choose 2");
+					break;
+				/* Edit password */
+				case 3:
+					puts("Choose 3");
+					break;
+				/* Remove password */
+				case 4:
+					puts("Choose 4");
+					break;
+				/* Add new user */
+				case 5:
+					/* Print message */
+					break;
+				/* Edit user */
+				case 6:
+					break;
+				default:
+					break;
+			}
 		} else {
 			puts("User not existing or bad password");
 		}
-		finish_db();
 
-
-		/*switch (start_answer)*/
-		/*{*/
-			/*[> List passwords <]*/
-			/*case 1:*/
-				/*puts("Choose 1");*/
-				/*break;*/
-			/*[> Add new password <]*/
-			/*case 2:*/
-				/*puts("Choose 2");*/
-				/*break;*/
-			/*[> Edit password <]*/
-			/*case 3:*/
-				/*puts("Choose 3");*/
-				/*break;*/
-			/*[> Remove password <]*/
-			/*case 4:*/
-				/*puts("Choose 4");*/
-				/*break;*/
-			/*[> Add new user <]*/
-			/*case 5:*/
-				/*[> Print message <]*/
-				/*fputs(create_message, stdout);*/
-				/*[> Get data <]*/
-				/*fputs(create_login, stdout);*/
-				/*fgets(login, LOGIN_SIZE, stdin);*/
-
-				/*fputs(create_password, stdout);*/
-				/*fgets(password, PASS_SIZE, stdin);*/
-
-				/*printf("User login: %s", login);*/
-				/*printf("User password: %s", password);*/
-				/*break;*/
-			/*[> Edit user <]*/
-			/*case 6:*/
-				/*break;*/
-			/*default:*/
-				/*break;*/
-		/*}*/
 	} else if (init_answer == 2) {
-
-		/* Authorization */
+		fputs(create_message, stdout);
+		/* Creating new user */
 		fputs(input_login, stdout);
 		scanf("%s", login);
 
@@ -138,18 +124,18 @@ int main(int argc, char *argv[])
 
 		/* Add blank line */
 		puts("");
-
-		printf("Login: %s\nPassword: %s\n", login, password);
-
-		init_db(db_name);
-		/* Testing for saved db path */
-		/*print_db_name();*/
+		/* Save user */
 		insert_into_user(login, password);
-		finish_db();
-		/*test_func();*/
+	} else if (init_answer == 3) {
+			fputs(finish_message, stdout);
+			goto finish_label;
 	} else {
 		fputs(init_error, stdout);
 	}
+finish_label:
+	/* Destroy Sqlite3 variables */
+	finish_db();
+	finish_stmt();
 	/* Clean memory here */
 	free(login);
 	free(password);

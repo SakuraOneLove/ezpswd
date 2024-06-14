@@ -39,9 +39,11 @@
 
 /* Init statements and database */
 int init_db(const char*);
+int init_stmt(void);
 int auth_user(const char*, const char*);
 /* Finitialize working with database */
 int finish_db();
+void finish_stmt(void);
 /* Create table for store users */
 int create_users_table(const char*);
 /* Add user to table */

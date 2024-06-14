@@ -38,10 +38,15 @@
 /* Define text constant here */
 /* Absolute first dialog then we choose create new user or auth */
 const char init_message[] = "Choose action:\n";
+const char auth_message[] = "\n=Authorization=\n";
 const char init_error[] = "Wrong answer! End programm...\n";
 const char init_dialog[] = "\
 1. Use existing login and password\n\
-2. Create new user\n";
+2. Create new user\n\
+3. Exit\n";
+
+/* Final message */
+const char finish_message[] = "Exiting...Goodbye!\n";
 
 /* After auth or creating new user */ 
 const char start_dialog[] = "\
@@ -53,7 +58,8 @@ const char start_dialog[] = "\
 6. Edit account\n";
 const char input_login[] = "Input login=>:\n";
 const char input_password[] = "Input password=>:\n";
-const char create_message[] = "=Creating new user=\n";
+const char create_message[] = "\n=Creating new user=\n";
+const char open_menu_message[] = "\n==Choose action:==\n";
 const char create_login[] = "Input new login name=>:\n";
 const char create_password[] = "Input password for new user=>:\n";
 
@@ -65,10 +71,15 @@ const char create_password[] = "Input password for new user=>:\n";
 /* Define text constant here */
 /* Absolute first dialog then we choose create new user or auth */
 const char init_message[] = "Выберите опцию:\n";
+const char auth_message[] = "\n=Авторизация=\n";
 const char init_error[] = "Вы выбрали неправильный вариант. Конец программы...\n";
 const char init_dialog[] = "\
 1. Авторизоваться по существующему логину и паролю\n\
-2. Создать нового пользователя\n";
+2. Создать нового пользователя\n\
+3. Выход\n";
+
+/* Final message */
+const char finish_message[] = "Завершение работы программы...Всего доброго!\n";
 
 /* After auth or creating new user */ 
 const char start_dialog[] = "\
@@ -80,7 +91,8 @@ const char start_dialog[] = "\
 6. Изменить данные пользователя\n";
 const char input_login[] = "Введите имя пользователя=>:\n";
 const char input_password[] = "Введите пароль=>:\n";
-const char create_message[] = "=Создание нового пользователя=\n";
+const char create_message[] = "\n=Создание нового пользователя=\n";
+const char open_menu_message[] = "\n==Выберите действие:==\n";
 const char create_login[] = "Придумайте имя для пользователя=>:\n";
 const char create_password[] = "Придумайте пароль для пользователя=>:\n";
 
