@@ -57,8 +57,11 @@ int init_db(const char* path)
 	int rc;
 	char *err_msg;
 	/* Initialize sql queries */
-	const char *create_table_user_query = \
-		"create table if not exists user (id integer primary key autoincrement, login text, password text);";
+	const char *create_table_queries[] = {
+		"create table if not exists user (id integer primary key autoincrement, login text unique, password text);",
+		"create table if not exists storage (id integer primary key autoincrement, name text, login text, password text);"
+		};
+	const size_t arr_tables_len = sizeof(create_table_queries) / sizeof(create_table_queries[0]); 
 	/* Allocate memory for path name */
 	db_path = malloc((strlen(path) + 1) * sizeof(char));
 	/* Copy path to db_path */
@@ -70,11 +73,13 @@ int init_db(const char* path)
 		return rc;
 	}
 	/* Create default tables */
-	rc = sqlite3_exec(db, create_table_user_query, 0, 0, &err_msg);
-	if (rc != SQLITE_OK) {
-		printf("Error while executing 'create user table':\n%s\n", err_msg);
-		sqlite3_free(err_msg);
-		return rc;
+	for (int i = 0; i < (const int)arr_tables_len; i++) {
+		rc = sqlite3_exec(db, create_table_queries[i], 0, 0, &err_msg);
+		if (rc != SQLITE_OK) {
+			printf("Error while executing '%s':\n%s\n", create_table_queries[i], err_msg);
+			sqlite3_free(err_msg);
+			return rc;
+		}
 	}
 	/* Init symmetrical key for encryption */
 	key_data = (char*)malloc(sizeof(char) * KEY_SIZE);
