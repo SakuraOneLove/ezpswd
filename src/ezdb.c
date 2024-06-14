@@ -120,7 +120,7 @@ int auth_user(const char *login, const char *password)
 	sqlite3_bind_text(fstmt, 1, login, -1, NULL);
 	/* Get password by login */
 	if(sqlite3_step(fstmt) == SQLITE_ROW){
-		returned_password	= sqlite3_column_text(fstmt, 0);
+		returned_password	= (char*)sqlite3_column_text(fstmt, 0);
 		rc = strcmp(sha_password_buffer, returned_password);
 		/* Set user auth status code */
 		if (rc == 0) {
@@ -189,14 +189,14 @@ int insert_into_storage(const char *name, const char *login, const char *passwor
 		 ofcourse this only works if sizeof(int) >= 4 */
 	unsigned int salt[] = {64353, 95375};
 	/* gen key and iv. init the cipher ctx object */
-	if (aes_init(key_data, key_data_len, (unsigned char *)&salt, en, de)) {
+	if (aes_init((unsigned char*)key_data, key_data_len, (unsigned char *)&salt, en, de)) {
 		printf("Couldn't initialize AES cipher\n");
 		return -1;
 	}
 	/* encrypt password */
 	unsigned char *ciphertext;
-	unsigned char *plaintext;
-	unsigned char *db_password;
+	/*unsigned char *plaintext;*/
+	/*unsigned char *db_password;*/
 	int len;
 	/* The enc/dec functions deal with binary data and not C strings. strlen() will 
 		 return length of the string without counting the '\0' string marker. We always
