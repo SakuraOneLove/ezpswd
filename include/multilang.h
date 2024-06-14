@@ -58,10 +58,12 @@ const char start_dialog[] = "\
 6. Edit account\n";
 const char input_login[] = "Input login=>:\n";
 const char input_password[] = "Input password=>:\n";
+const char input_name[] = "\nInput name for record==>:\n";
 const char create_message[] = "\n=Creating new user=\n";
 const char open_menu_message[] = "\n==Choose action:==\n";
 const char create_login[] = "Input new login name=>:\n";
 const char create_password[] = "Input password for new user=>:\n";
+const char save_succes[] = "Successfully saved!\n";
 
 #endif
 
@@ -91,10 +93,12 @@ const char start_dialog[] = "\
 6. Изменить данные пользователя\n";
 const char input_login[] = "Введите имя пользователя=>:\n";
 const char input_password[] = "Введите пароль=>:\n";
+const char input_name[] = "\nВведите имя для записи==>:\n";
 const char create_message[] = "\n=Создание нового пользователя=\n";
 const char open_menu_message[] = "\n==Выберите действие:==\n";
 const char create_login[] = "Придумайте имя для пользователя=>:\n";
 const char create_password[] = "Придумайте пароль для пользователя=>:\n";
+const char save_succes[] = "Успешно сохранено!\n";
 
 #endif
 

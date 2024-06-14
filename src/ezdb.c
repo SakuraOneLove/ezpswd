@@ -43,6 +43,7 @@
 sqlite3 *db;
 /* Sqlite3 statements */
 sqlite3_stmt *insert_into_storage_stmt;
+sqlite3_stmt *select_all_from_storage_stmt;
 char *db_path;
 char *key_data;
 static int key_data_len;
@@ -100,10 +101,17 @@ int init_stmt()
 	int rc = 0;
 	const char* insert_into_storage_query = \
 						"insert into storage (name, login, password, user_id) values (?, ?, ?, ?);";
+	const char* select_all_from_storage_query = \
+						"select name, login, password from storage where user_id=?;";
 	/* Initialization of statements */
 	rc = sqlite3_prepare_v2(db, insert_into_storage_query, -1, &insert_into_storage_stmt, NULL);
 	if (rc != SQLITE_OK) {
 		printf("Can't prepare statement '%s', error code: %d\n", insert_into_storage_query, rc);
+		goto err_label;
+	}
+	rc = sqlite3_prepare_v2(db, select_all_from_storage_query, -1, &select_all_from_storage_stmt, NULL);
+	if (rc != SQLITE_OK) {
+		printf("Can't prepare statement '%s', error code: %d\n", select_all_from_storage_query, rc);
 		goto err_label;
 	}
 err_label:
@@ -255,6 +263,45 @@ int insert_into_storage(const char *name, const char *login, const char *passwor
 	EVP_CIPHER_CTX_free(en);
 	EVP_CIPHER_CTX_free(de);
 	return 0;
+}
+
+int select_all_from_storage()
+{
+	int len, rc;
+	unsigned int salt[] = {64353, 95375};
+	/* "opaque" encryption, decryption ctx structures that libcrypto uses to record
+		 status of enc/dec operations */
+	EVP_CIPHER_CTX* en = EVP_CIPHER_CTX_new();
+	EVP_CIPHER_CTX* de = EVP_CIPHER_CTX_new();
+	if (aes_init((unsigned char*)key_data, key_data_len, (unsigned char *)&salt, en, de)) {
+		printf("Couldn't initialize AES cipher\n");
+		rc = 1;
+		goto err_label;
+	}
+	/* Bind statement */
+	sqlite3_bind_int(select_all_from_storage_stmt, 1, user_id);
+	/* Get all result */
+	while (sqlite3_step(select_all_from_storage_stmt) == SQLITE_ROW) {
+		char *plaintext;
+		char *name;
+		char *login;
+		char *password;
+		name = (char*)sqlite3_column_text(select_all_from_storage_stmt, 0);
+		login = (char*)sqlite3_column_text(select_all_from_storage_stmt, 1);
+		password = (char*)sqlite3_column_text(select_all_from_storage_stmt, 2);
+		plaintext = (char*)aes_decrypt(de, (unsigned char*)password, (int*)&len);
+		printf("Name: %s\nLogin: %s\nPassword: %s\n", name, login, (char*)plaintext);
+		/* Free memory */
+		free(plaintext);
+	}
+	/* Reset statement */
+	sqlite3_reset(select_all_from_storage_stmt);
+	/* Free memory */
+	/*free(plaintext);*/
+	EVP_CIPHER_CTX_free(en);
+	EVP_CIPHER_CTX_free(de);
+err_label:
+	return rc;
 }
 
 void print_db_name(void)

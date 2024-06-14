@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "ezio.h"
 #include "sqlite3.h"
 #include "ezcrypt.h"
 
@@ -52,6 +53,7 @@ int create_user(const char*);
 int insert_into_user(const char*, const char*);
 /* Sql operations with storage table */
 int insert_into_storage(const char*, const char*, const char*);
+int select_all_from_storage();
 /* Functions for debugging */
 void print_db_name(void);
 #endif

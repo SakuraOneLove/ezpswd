@@ -35,6 +35,10 @@
 #include <string.h>
 #include <termios.h>
 
+#define LOGIN_SIZE 30
+#define NAME_SIZE 30
+#define PASS_SIZE 50
+
 char *getepass(char *, int);
 void clear_input(void);
 

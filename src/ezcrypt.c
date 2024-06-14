@@ -90,7 +90,7 @@ unsigned char *aes_decrypt(EVP_CIPHER_CTX *e, unsigned char *ciphertext, int *le
 {
   /* plaintext will always be equal to or lesser than length of ciphertext*/
   int p_len = *len, f_len = 0;
-  unsigned char *plaintext = malloc(p_len);
+	unsigned char *plaintext = malloc(p_len);
   
   EVP_DecryptInit_ex(e, NULL, NULL, NULL, NULL);
   EVP_DecryptUpdate(e, plaintext, &p_len, ciphertext, *len);

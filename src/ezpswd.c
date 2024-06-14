@@ -33,9 +33,6 @@
 #include "ezcrypt.h"
 #include "multilang.h"
 
-#define LOGIN_SIZE 30
-#define PASS_SIZE 50
-
 const char *db_name = "test.db";
 
 int main(int argc, char *argv[])
@@ -44,12 +41,14 @@ int main(int argc, char *argv[])
 	int init_answer;
 	int menu_answer;
 	/*int start_answer;*/
+	char *name;
 	char *login;
 	char *password;
 
-	/* Allocate memory for login and password */
+	/* Allocate memory for variables */
 	login = malloc(LOGIN_SIZE * sizeof(char));
 	password = malloc(PASS_SIZE * sizeof(char));
+	name = malloc(NAME_SIZE * sizeof(char));
 
 	/* Initialize Sqlite3 data */
 	init_db(db_name);
@@ -82,11 +81,20 @@ int main(int argc, char *argv[])
 			switch (menu_answer) {
 				/* List passwords */
 				case 1:
-					puts("Choose 1");
+					select_all_from_storage();
 					break;
 				/* Add new password */
 				case 2:
-					puts("Choose 2");
+					/* Input name, login, password for record */
+					fputs(input_name, stdout);
+					scanf("%s", name);
+					fputs(input_login, stdout); 
+					scanf("%s", login);
+					fputs(input_password, stdout);
+					scanf("%s", password);
+					/* Save to db */
+					insert_into_storage((const char*)name, (const char*)login, (const char*)password);
+					fputs(save_succes, stdout);
 					break;
 				/* Edit password */
 				case 3:
@@ -139,6 +147,6 @@ finish_label:
 	/* Clean memory here */
 	free(login);
 	free(password);
-
+	free(name);
 	return 0;
 }
